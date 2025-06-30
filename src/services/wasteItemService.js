@@ -1,9 +1,6 @@
 import {
   findWasteItemsByDropoffIdModel,
   findWasteItemByIdModel,
-  createWasteItemModel,
-  updateWasteItemModel,
-  deleteWasteItemModel,
 } from "../models/wasteItemModel.js";
 import { getWasteTypeByIdService } from "./wasteTypeService.js";
 import { getDropoffByIdService } from "./dropoffService.js";
@@ -41,6 +38,7 @@ export const addWasteItemService = async (dropoffId, wasteItemData) => {
 
   const amount = wasteItemData.weight * wasteType.pricePerKg;
 
+  // Hitung biaya yang diperlukan (10000 per kg)
   const requiredReduction = Math.ceil(wasteItemData.weight * 10000);
 
   const user = await prisma.user.findUnique({
@@ -49,6 +47,12 @@ export const addWasteItemService = async (dropoffId, wasteItemData) => {
 
   if (!user) {
     throw new Error("User not found");
+  }
+
+  // Cek apakah user memiliki cukup point dan balance
+  const totalAvailable = user.points + user.balance;
+  if (totalAvailable < requiredReduction) {
+    throw new Error("Insufficient points and balance to add this waste item");
   }
 
   const result = await prisma.$transaction(async (prisma) => {
@@ -80,6 +84,7 @@ export const addWasteItemService = async (dropoffId, wasteItemData) => {
       },
     });
 
+    // Kurangi point terlebih dahulu, jika kurang tambal dengan balance
     if (user.points >= requiredReduction) {
       await prisma.user.update({
         where: { id: dropoff.userId },
@@ -90,11 +95,14 @@ export const addWasteItemService = async (dropoffId, wasteItemData) => {
         },
       });
     } else {
+      const remainingAfterPoints = requiredReduction - user.points;
+
       await prisma.user.update({
         where: { id: dropoff.userId },
         data: {
+          points: 0, // Habiskan semua point
           balance: {
-            decrement: requiredReduction,
+            decrement: remainingAfterPoints, // Kurangi sisa dari balance
           },
         },
       });
@@ -155,6 +163,14 @@ export const updateWasteItemService = async (id, wasteItemData) => {
       });
 
       if (pointsAdjustment > 0) {
+        // Cek apakah user memiliki cukup point dan balance untuk penambahan berat
+        const totalAvailable = user.points + user.balance;
+        if (totalAvailable < pointsAdjustment) {
+          throw new Error(
+            "Insufficient points and balance to update this waste item"
+          );
+        }
+
         if (user.points >= pointsAdjustment) {
           await prisma.user.update({
             where: { id: wasteItem.dropoff.userId },
@@ -163,14 +179,18 @@ export const updateWasteItemService = async (id, wasteItemData) => {
             },
           });
         } else {
+          const remainingAfterPoints = pointsAdjustment - user.points;
+
           await prisma.user.update({
             where: { id: wasteItem.dropoff.userId },
             data: {
-              balance: { decrement: pointsAdjustment },
+              points: 0,
+              balance: { decrement: remainingAfterPoints },
             },
           });
         }
       } else if (pointsAdjustment < 0) {
+        // Refund ke balance jika berat dikurangi
         await prisma.user.update({
           where: { id: wasteItem.dropoff.userId },
           data: {
@@ -243,6 +263,7 @@ export const removeWasteItemService = async (id) => {
       },
     });
 
+    // Refund ke balance
     const refundAmount = Math.ceil(wasteItem.weight * 10000);
 
     await prisma.user.update({

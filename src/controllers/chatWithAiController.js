@@ -16,7 +16,7 @@ export const createChatController = async (req, res) => {
     const userId = req.user.id;
     const imageFile = req.file;
 
-    // Validasi input - minimal ada message atau gambar
+    // Validasi input minimal ada message atau gambar
     if (!message?.trim() && !imageFile) {
       return response.validation(res, {
         message: "Message or image is required",
@@ -62,7 +62,7 @@ export const getChatHistoryController = async (req, res) => {
   try {
     const userId = req.user.id;
     const page = parseInt(req.query.page) || 1;
-    const limit = Math.min(parseInt(req.query.limit) || 10, 50); // Max 50 per page
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50);
 
     const result = await getChatHistoryService(userId, page, limit);
 
@@ -113,13 +113,6 @@ export const getChatByIdController = async (req, res) => {
     const userId = req.user.id;
     const userRole = req.user.role;
 
-    // Validasi format ID
-    if (!id || id.length < 10) {
-      return response.validation(res, {
-        message: "Invalid chat ID format",
-      });
-    }
-
     const chat = await getChatByIdService(id, userId, userRole);
 
     return response.success(res, chat, "Chat retrieved successfully");
@@ -141,13 +134,6 @@ export const deleteChatController = async (req, res) => {
     const userId = req.user.id;
     const userRole = req.user.role;
 
-    // Validasi format ID
-    if (!id || id.length < 10) {
-      return response.validation(res, {
-        message: "Invalid chat ID format",
-      });
-    }
-
     const result = await deleteChatService(id, userId, userRole);
 
     return response.success(res, null, result.message);
@@ -166,9 +152,8 @@ export const deleteChatController = async (req, res) => {
 export const getAllChatsController = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = Math.min(parseInt(req.query.limit) || 10, 100); // Max 100 for admin
+    const limit = Math.min(parseInt(req.query.limit) || 10, 100);
 
-    // Filter options
     const filters = {};
     if (req.query.userId) filters.userId = req.query.userId;
     if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom;
@@ -214,7 +199,6 @@ export const bulkDeleteChatsController = async (req, res) => {
       });
     }
 
-    // Limit bulk operations
     if (chatIds.length > 50) {
       return response.validation(res, {
         message: "Maximum 50 chats can be deleted at once",

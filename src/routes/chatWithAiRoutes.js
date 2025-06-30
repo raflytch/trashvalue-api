@@ -14,42 +14,37 @@ import upload from "../middlewares/upload.js";
 
 const router = express.Router();
 
-// Route untuk membuat chat baru dengan optional image upload (USER & ADMIN)
+// Route untuk membuat chat baru dengan optional image upload
 router.post(
   "/",
   roleMiddleware("USER", "ADMIN"),
-  upload.single("image"), // Support single image upload
+  upload.single("image"),
   createChatController
 );
 
-// Route untuk mencari chat (USER & ADMIN)
+// Route untuk mencari chat
 router.get("/search", roleMiddleware("USER", "ADMIN"), searchChatController);
 
-// Route untuk mendapatkan riwayat chat user (USER & ADMIN)
+// Route untuk mendapatkan riwayat chat user
 router.get(
   "/history",
   roleMiddleware("USER", "ADMIN"),
   getChatHistoryController
 );
 
-// Route untuk mendapatkan chat berdasarkan ID (USER & ADMIN)
+// Route untuk mendapatkan chat berdasarkan ID
 router.get("/:id", roleMiddleware("USER", "ADMIN"), getChatByIdController);
 
-// Route untuk menghapus chat (USER & ADMIN)
+// Route untuk menghapus chat
 router.delete("/:id", roleMiddleware("USER", "ADMIN"), deleteChatController);
 
-// Admin-only routes
-// Route untuk admin mendapatkan semua chat dengan filter (ADMIN only)
+// Admin routes
 router.get("/admin/all", roleMiddleware("ADMIN"), getAllChatsController);
-
-// Route untuk admin mendapatkan statistik chat (ADMIN only)
 router.get(
   "/admin/statistics",
   roleMiddleware("ADMIN"),
   getChatStatisticsController
 );
-
-// Route untuk bulk delete chats (ADMIN only)
 router.delete(
   "/admin/bulk-delete",
   roleMiddleware("ADMIN"),

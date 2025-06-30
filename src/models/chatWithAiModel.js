@@ -1,14 +1,13 @@
 import prisma from "../config/prisma.js";
 
-// Fungsi untuk menyimpan chat baru ke database (dengan dukungan gambar)
+// Menyimpan chat baru ke database
 export const createChatModel = async (chatData) => {
   return prisma.chat.create({
     data: {
       userId: chatData.userId,
       message: chatData.message,
       response: chatData.response,
-      // Tambahkan field image jika ada (akan ditambah ke schema nanti)
-      ...(chatData.imageUrl && { imageUrl: chatData.imageUrl }),
+      imageUrl: chatData.imageUrl || null, // Pastikan null jika tidak ada gambar
     },
     include: {
       user: {
@@ -23,19 +22,15 @@ export const createChatModel = async (chatData) => {
   });
 };
 
-// Fungsi untuk mendapatkan riwayat chat user dengan pagination
+// Mendapatkan riwayat chat user dengan pagination
 export const findChatsByUserIdModel = async (userId, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
 
   const chats = await prisma.chat.findMany({
-    where: {
-      userId,
-    },
+    where: { userId },
     skip,
     take: limit,
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
     include: {
       user: {
         select: {
@@ -49,20 +44,16 @@ export const findChatsByUserIdModel = async (userId, page = 1, limit = 10) => {
   });
 
   const totalChats = await prisma.chat.count({
-    where: {
-      userId,
-    },
+    where: { userId },
   });
 
   return { chats, totalChats };
 };
 
-// Fungsi untuk mendapatkan chat berdasarkan ID
+// Mendapatkan chat berdasarkan ID
 export const findChatByIdModel = async (id) => {
   return prisma.chat.findUnique({
-    where: {
-      id,
-    },
+    where: { id },
     include: {
       user: {
         select: {
@@ -76,27 +67,24 @@ export const findChatByIdModel = async (id) => {
   });
 };
 
-// Fungsi untuk menghapus chat
+// Menghapus chat
 export const deleteChatModel = async (id) => {
   return prisma.chat.delete({
-    where: {
-      id,
-    },
+    where: { id },
   });
 };
 
-// Fungsi untuk mendapatkan semua chat (untuk admin) dengan filter
+// Mendapatkan semua chat untuk admin dengan filter
 export const findAllChatsModel = async (page = 1, limit = 10, filters = {}) => {
   const skip = (page - 1) * limit;
-
   const whereClause = {};
 
-  // Filter berdasarkan user jika diperlukan
+  // Filter berdasarkan user
   if (filters.userId) {
     whereClause.userId = filters.userId;
   }
 
-  // Filter berdasarkan tanggal jika diperlukan
+  // Filter berdasarkan tanggal
   if (filters.dateFrom || filters.dateTo) {
     whereClause.createdAt = {};
     if (filters.dateFrom) {
@@ -111,9 +99,7 @@ export const findAllChatsModel = async (page = 1, limit = 10, filters = {}) => {
     where: whereClause,
     skip,
     take: limit,
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
     include: {
       user: {
         select: {
@@ -133,7 +119,7 @@ export const findAllChatsModel = async (page = 1, limit = 10, filters = {}) => {
   return { chats, totalChats };
 };
 
-// Fungsi untuk mencari chat berdasarkan keyword
+// Mencari chat berdasarkan keyword
 export const searchChatsModel = async (
   userId,
   keyword,
@@ -142,29 +128,29 @@ export const searchChatsModel = async (
 ) => {
   const skip = (page - 1) * limit;
 
+  const whereClause = {
+    userId,
+    OR: [
+      {
+        message: {
+          contains: keyword,
+          mode: "insensitive",
+        },
+      },
+      {
+        response: {
+          contains: keyword,
+          mode: "insensitive",
+        },
+      },
+    ],
+  };
+
   const chats = await prisma.chat.findMany({
-    where: {
-      userId,
-      OR: [
-        {
-          message: {
-            contains: keyword,
-            mode: "insensitive",
-          },
-        },
-        {
-          response: {
-            contains: keyword,
-            mode: "insensitive",
-          },
-        },
-      ],
-    },
+    where: whereClause,
     skip,
     take: limit,
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
     include: {
       user: {
         select: {
@@ -178,23 +164,7 @@ export const searchChatsModel = async (
   });
 
   const totalChats = await prisma.chat.count({
-    where: {
-      userId,
-      OR: [
-        {
-          message: {
-            contains: keyword,
-            mode: "insensitive",
-          },
-        },
-        {
-          response: {
-            contains: keyword,
-            mode: "insensitive",
-          },
-        },
-      ],
-    },
+    where: whereClause,
   });
 
   return { chats, totalChats };

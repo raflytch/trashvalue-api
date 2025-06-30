@@ -3,12 +3,12 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Inisialisasi Gemini AI dengan API key dari environment
+// Inisialisasi Gemini AI
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-// Context khusus untuk TrashValue yang lebih lengkap
+// Context untuk TrashValue
 const TRASHVALUE_CONTEXT = `
 Anda adalah asisten virtual TrashValue, aplikasi manajemen sampah digital yang menghubungkan pengguna dengan bank sampah. 
 
@@ -64,13 +64,12 @@ Informasi lengkap tentang TrashValue:
 5. Terima poin/saldo setelah verifikasi
 6. Tarik saldo atau tukar dengan rewards
 
-Selalu jawab dengan konteks TrashValue, berikan informasi yang akurat, dan arahkan pengguna untuk memanfaatkan fitur-fitur aplikasi. Jika ada pertanyaan di luar topik, dengan sopan arahkan kembali ke TrashValue.
+Selalu jawab dengan konteks TrashValue, berikan informasi yang akurat, dan arahkan pengguna untuk memanfaatkan fitur-fitur aplikasi.
 `;
 
-// Fungsi untuk generate response dari Gemini (hanya text)
+// Generate response text saja
 export const generateGeminiResponse = async (userMessage) => {
   try {
-    // Buat prompt dengan context yang lebih kaya
     const prompt = `${TRASHVALUE_CONTEXT}
 
 Pertanyaan/pesan dari pengguna: "${userMessage}"
@@ -84,7 +83,6 @@ Instruksi khusus:
 
 Jawaban Anda:`;
 
-    // Generate response menggunakan Gemini 2.5 Flash
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash-exp",
       contents: prompt,
@@ -105,14 +103,13 @@ Jawaban Anda:`;
   }
 };
 
-// Fungsi untuk generate response dengan gambar
+// Generate response dengan analisis gambar
 export const generateGeminiResponseWithImage = async (
   userMessage,
   imageBase64,
   mimeType
 ) => {
   try {
-    // Context khusus untuk analisis gambar sampah
     const imageAnalysisPrompt = `${TRASHVALUE_CONTEXT}
 
 Pengguna TrashValue mengirim gambar dengan pesan: "${userMessage}"
@@ -129,7 +126,6 @@ Jika gambar bukan sampah, tetap berikan respons yang mengarahkan ke penggunaan T
 
 Analisis dan jawaban Anda:`;
 
-    // Generate response dengan gambar
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash-exp",
       contents: [

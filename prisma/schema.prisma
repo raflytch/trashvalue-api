@@ -14,19 +14,20 @@ datasource db {
 }
 
 model User {
-  id              String      @id @default(cuid())
+  id              String        @id @default(cuid())
   name            String
-  phone           String      @unique
-  email           String?     @unique
+  phone           String        @unique
+  email           String?       @unique
   password        String
   address         String
-  points          Int         @default(0)
-  balance         Float       @default(0)
-  role            Role        @default(USER)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  points          Int           @default(0)
+  balance         Float         @default(0)
+  role            Role          @default(USER)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
   transactions    Transaction[]
   dropoffs        Dropoff[]
+  chats           Chat[]
   profileImage    String?
   backgroundPhoto String?
 }
@@ -44,19 +45,19 @@ model WasteType {
 }
 
 model Dropoff {
-  id          String      @id @default(cuid())
-  user        User        @relation(fields: [userId], references: [id])
-  userId      String
-  status      Status      @default(PENDING)
-  totalWeight Float
-  totalAmount Float
+  id            String       @id @default(cuid())
+  user          User         @relation(fields: [userId], references: [id])
+  userId        String
+  status        Status       @default(PENDING)
+  totalWeight   Float
+  totalAmount   Float
   pickupAddress String?
-  pickupDate   DateTime?
-  pickupMethod PickupMethod @default(DROPOFF)
-  notes        String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  wasteItems  WasteItem[]
+  pickupDate    DateTime?
+  pickupMethod  PickupMethod @default(DROPOFF)
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  wasteItems    WasteItem[]
 }
 
 model WasteItem {
@@ -74,17 +75,27 @@ model WasteItem {
 }
 
 model Transaction {
-  id            String    @id @default(cuid())
-  user          User      @relation(fields: [userId], references: [id])
+  id            String         @id @default(cuid())
+  user          User           @relation(fields: [userId], references: [id])
   userId        String
   amount        Float
   type          TxType
-  status        Status    @default(PENDING)
+  status        Status         @default(PENDING)
   paymentMethod PaymentMethod?
   paymentId     String?
   description   String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Chat {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  message   String
+  response  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {

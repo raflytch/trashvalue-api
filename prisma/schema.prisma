@@ -94,6 +94,7 @@ model Chat {
   userId    String
   message   String
   response  String
+  imageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -1,6 +1,6 @@
 # ♻️ TrashValue Backend
 
-**TrashValue** adalah aplikasi manajemen sampah digital yang menghubungkan pengguna dengan bank sampah. Pengguna dapat menyetorkan sampah mereka dan menerima uang tunai atau poin digital sebagai imbalan.
+**TrashValue** adalah aplikasi manajemen sampah digital yang menghubungkan pengguna dengan bank sampah. Pengguna dapat menyetorkan sampah mereka dan menerima uang tunai atau poin digital sebagai imbalan. Sistem ini juga menyediakan fitur chat AI berbasis Gemini untuk edukasi dan konsultasi seputar pengelolaan sampah.
 
 ---
 
@@ -17,6 +17,7 @@
 - 🎁 Sistem hadiah berbasis poin untuk aktivitas daur ulang
 - 📆 Penjadwalan pengambilan & penyetoran sampah
 - 📡 Pelacakan status pembayaran secara **real-time**
+- 🤖 **Chat AI** edukasi & konsultasi berbasis **Gemini API** (text & image)
 
 ---
 
@@ -35,18 +36,38 @@
 | Morgan               | Logger request HTTP                          |
 | express-validator    | Middleware validasi input                    |
 | dotenv               | Manajemen variabel lingkungan                |
+| **Gemini API**       | Layanan AI Google untuk chat asisten cerdas  |
 
 ---
 
 ## 📁 Struktur API
 
-| Endpoint               | Fungsi                                        |
-| ---------------------- | --------------------------------------------- |
-| `/api/v1/users`        | Registrasi, login, & manajemen profil         |
-| `/api/v1/waste-types`  | CRUD kategori sampah & harga                  |
-| `/api/v1/dropoffs`     | Penjadwalan dan pengelolaan penyetoran sampah |
-| `/api/v1/waste`        | Pengelolaan item sampah dalam dropoff         |
-| `/api/v1/transactions` | Proses & riwayat transaksi keuangan           |
+| Endpoint               | Fungsi                                                              |
+| ---------------------- | ------------------------------------------------------------------- |
+| `/api/v1/users`        | Registrasi, login, & manajemen profil                               |
+| `/api/v1/waste-types`  | CRUD kategori sampah & harga                                        |
+| `/api/v1/dropoffs`     | Penjadwalan dan pengelolaan penyetoran sampah                       |
+| `/api/v1/waste`        | Pengelolaan item sampah dalam dropoff                               |
+| `/api/v1/transactions` | Proses & riwayat transaksi keuangan                                 |
+| `/api/v1/chat-with-ai` | Chat dengan AI (text & image), riwayat, pencarian, hapus, statistik |
+
+### Detail Endpoint Chat AI
+
+| Endpoint                           | Method | Auth  | Deskripsi                                                                       |
+| ---------------------------------- | ------ | ----- | ------------------------------------------------------------------------------- |
+| `/api/v1/chat-with-ai`             | POST   | User  | Kirim chat ke AI (text/gambar). Field: `message`, optional: `image` (form-data) |
+| `/api/v1/chat-with-ai/history`     | GET    | User  | Ambil riwayat chat user (pagination: `page`, `limit`)                           |
+| `/api/v1/chat-with-ai/search`      | GET    | User  | Cari chat user berdasarkan keyword (`keyword`, `page`, `limit`)                 |
+| `/api/v1/chat-with-ai/:id`         | GET    | User  | Ambil detail chat berdasarkan ID                                                |
+| `/api/v1/chat-with-ai/:id`         | DELETE | User  | Hapus chat tertentu                                                             |
+| `/api/v1/chat-with-ai/all`         | GET    | Admin | Ambil semua chat (filter: `userId`, `dateFrom`, `dateTo`, `page`, `limit`)      |
+| `/api/v1/chat-with-ai/statistics`  | GET    | Admin | Statistik chat (total, hari ini, mingguan, user aktif)                          |
+| `/api/v1/chat-with-ai/bulk-delete` | POST   | Admin | Hapus banyak chat sekaligus (`chatIds`: array of chat ID, max 50 per request)   |
+
+**Catatan:**
+
+- Semua endpoint chat AI menggunakan Gemini API untuk menghasilkan respons cerdas, termasuk analisis gambar.
+- Upload gambar hanya mendukung format JPG, JPEG, PNG, maksimal 5MB.
 
 ---
 
@@ -84,6 +105,7 @@ MIDTRANS_CLIENT_KEY=kunci_klien_midtrans
 PORT=3000
 JWT_EXPIRATION=1d
 ADMIN_PASSWORD=password_admin
+GEMINI_API_KEY=api_key_gemini
 ```
 
 4. **Migrasi & seeding database**
@@ -116,6 +138,7 @@ npm start
 | **Dropoffs**     | Data penyetoran sampah oleh user            |
 | **WasteItems**   | Item sampah individual dalam sebuah dropoff |
 | **Transactions** | Riwayat transaksi (deposit & withdraw)      |
+| **Chats**        | Riwayat chat AI (pesan, respons, gambar)    |
 
 ---
 
@@ -130,6 +153,15 @@ npm start
 - Sistem lebih dulu menggunakan poin
 - Jika poin tidak cukup, maka saldo akan digunakan
 - Setelah dropoff selesai, pengguna akan menerima kembali **saldo dan poin** sesuai kontribusi
+
+---
+
+## 🤖 Tentang Fitur Chat AI (Gemini)
+
+- Chat AI menggunakan **Google Gemini API** untuk menjawab pertanyaan dan konsultasi seputar pengelolaan sampah, edukasi, dan fitur TrashValue.
+- Mendukung input teks dan gambar (analisis gambar sampah, edukasi visual).
+- Setiap chat disimpan di database dan dapat diakses kembali oleh user.
+- Admin dapat melihat statistik penggunaan chat AI dan mengelola data chat.
 
 ---
 

@@ -6,7 +6,7 @@ import {
   removeUser,
   updateRole,
   updateUserById,
-} from "../services/userService.js";
+} from "../services/user.service.js";
 import { response } from "../core/response.js";
 import imagekit from "../utils/imagekit.js";
 

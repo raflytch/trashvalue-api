@@ -6,7 +6,7 @@ import {
   deleteChatService,
   getAllChatsService,
   getChatStatisticsService,
-} from "../services/chatWithAiService.js";
+} from "../services/chat-with-ai.service.js";
 import { response } from "../core/response.js";
 
 // Controller untuk membuat chat baru dengan AI (dengan dukungan gambar)

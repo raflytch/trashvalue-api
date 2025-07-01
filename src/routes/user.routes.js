@@ -7,9 +7,9 @@ import {
   deleteUserById,
   updateUserRole,
   updateUser,
-} from "../controllers/userController.js";
+} from "../controllers/user.controller.js";
 import upload from "../middlewares/upload.js";
-import roleMiddleware from "../middlewares/auth.js";
+import roleMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 

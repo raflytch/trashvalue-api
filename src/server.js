@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import {
   errorHandler,
   notFoundHandler,
-} from "../src/middlewares/errorHandler.js";
+} from "../src/middlewares/error-handler.js";
 import router from "./routes/index.js";
 dotenv.config();
 

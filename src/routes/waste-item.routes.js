@@ -5,17 +5,25 @@ import {
   createWasteItemController,
   updateWasteItemController,
   deleteWasteItemController,
-} from "../controllers/wasteItemController.js";
+} from "../controllers/waste-item.controller.js";
 import upload from "../middlewares/upload.js";
-import roleMiddleware from "../middlewares/auth.js";
+import roleMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
 // Get all waste items for a dropoff
-router.get("/dropoffs/:dropoffId/items", roleMiddleware("USER", "ADMIN"), getWasteItemsController);
+router.get(
+  "/dropoffs/:dropoffId/items",
+  roleMiddleware("USER", "ADMIN"),
+  getWasteItemsController
+);
 
 // Get a specific waste item
-router.get("/items/:id", roleMiddleware("USER", "ADMIN"), getWasteItemByIdController);
+router.get(
+  "/items/:id",
+  roleMiddleware("USER", "ADMIN"),
+  getWasteItemByIdController
+);
 
 // Create a new waste item for a dropoff
 router.post(
@@ -34,6 +42,10 @@ router.patch(
 );
 
 // Delete a waste item
-router.delete("/items/:id", roleMiddleware("USER", "ADMIN"), deleteWasteItemController);
+router.delete(
+  "/items/:id",
+  roleMiddleware("USER", "ADMIN"),
+  deleteWasteItemController
+);
 
 export default router;

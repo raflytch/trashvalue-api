@@ -5,9 +5,9 @@ import {
   createWasteTypeController,
   updateWasteTypeController,
   deleteWasteTypeController,
-} from "../controllers/wasteTypeController.js";
+} from "../controllers/waste-type.controller.js";
 import upload from "../middlewares/upload.js";
-import roleMiddleware from "../middlewares/auth.js";
+import roleMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 

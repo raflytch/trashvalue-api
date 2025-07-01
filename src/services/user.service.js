@@ -8,8 +8,8 @@ import {
   updateUserRole,
   updateUserProfile,
   findUserByPhoneExcludingId,
-} from "../models/userModel.js";
-import { findUserByEmailOrPhone } from "../models/userModel.js";
+} from "../models/user.model.js";
+import { findUserByEmailOrPhone } from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 

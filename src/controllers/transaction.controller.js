@@ -8,7 +8,7 @@ import {
   updateTransactionStatusService,
   getPaymentStatusService,
   cancelTransactionService,
-} from "../services/transactionService.js";
+} from "../services/transaction.service.js";
 import { response } from "../core/response.js";
 import { USER_ROLE } from "../core/constant.js";
 

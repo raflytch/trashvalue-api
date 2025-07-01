@@ -6,7 +6,7 @@ import {
   updateWasteTypeModel,
   deleteWasteTypeModel,
   findWasteTypeByNameExcludingIdModel,
-} from "../models/wasteTypeModel.js";
+} from "../models/waste-type.model.js";
 
 export const getAllWasteTypesService = async (
   page = 1,

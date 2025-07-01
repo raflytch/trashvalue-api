@@ -49,24 +49,11 @@
 | `/api/v1/dropoffs`     | Penjadwalan dan pengelolaan penyetoran sampah                       |
 | `/api/v1/waste`        | Pengelolaan item sampah dalam dropoff                               |
 | `/api/v1/transactions` | Proses & riwayat transaksi keuangan                                 |
-| `/api/v1/chat-with-ai` | Chat dengan AI (text & image), riwayat, pencarian, hapus, statistik |
-
-### Detail Endpoint Chat AI
-
-| Endpoint                           | Method | Auth  | Deskripsi                                                                       |
-| ---------------------------------- | ------ | ----- | ------------------------------------------------------------------------------- |
-| `/api/v1/chat-with-ai`             | POST   | User  | Kirim chat ke AI (text/gambar). Field: `message`, optional: `image` (form-data) |
-| `/api/v1/chat-with-ai/history`     | GET    | User  | Ambil riwayat chat user (pagination: `page`, `limit`)                           |
-| `/api/v1/chat-with-ai/search`      | GET    | User  | Cari chat user berdasarkan keyword (`keyword`, `page`, `limit`)                 |
-| `/api/v1/chat-with-ai/:id`         | GET    | User  | Ambil detail chat berdasarkan ID                                                |
-| `/api/v1/chat-with-ai/:id`         | DELETE | User  | Hapus chat tertentu                                                             |
-| `/api/v1/chat-with-ai/all`         | GET    | Admin | Ambil semua chat (filter: `userId`, `dateFrom`, `dateTo`, `page`, `limit`)      |
-| `/api/v1/chat-with-ai/statistics`  | GET    | Admin | Statistik chat (total, hari ini, mingguan, user aktif)                          |
-| `/api/v1/chat-with-ai/bulk-delete` | POST   | Admin | Hapus banyak chat sekaligus (`chatIds`: array of chat ID, max 50 per request)   |
+| `/api/v1/chat`         | Chat dengan AI (text & image), riwayat, pencarian, hapus, statistik |
 
 **Catatan:**
 
-- Semua endpoint chat AI menggunakan Gemini API untuk menghasilkan respons cerdas, termasuk analisis gambar.
+- Endpoint chat AI menggunakan Gemini API untuk menghasilkan respons cerdas, termasuk analisis gambar.
 - Upload gambar hanya mendukung format JPG, JPEG, PNG, maksimal 5MB.
 
 ---

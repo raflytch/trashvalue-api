@@ -40,6 +40,7 @@ app.get("/", (req, res) => {
       dropoffs: "/api/v1/dropoffs",
       waste: "/api/v1/waste",
       transactions: "/api/v1/transactions",
+      chatWithAI: "/api/v1/chat",
     },
     status: "operational",
   });

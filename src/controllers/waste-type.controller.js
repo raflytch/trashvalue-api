@@ -4,7 +4,7 @@ import {
   addWasteTypeService,
   updateWasteTypeService,
   removeWasteTypeService,
-} from "../services/wasteTypeService.js";
+} from "../services/waste-type.service.js";
 import { response } from "../core/response.js";
 import imagekit from "../utils/imagekit.js";
 

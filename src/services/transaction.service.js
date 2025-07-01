@@ -6,8 +6,8 @@ import {
   updateTransactionStatusModel,
   updateTransactionPaymentIdModel,
   findTransactionByPaymentIdModel,
-} from "../models/transactionModel.js";
-import { findUserById } from "../models/userModel.js";
+} from "../models/transaction.model.js";
+import { findUserById } from "../models/user.model.js";
 import { STATUS, TRANSACTION_TYPE, PAYMENT_METHOD } from "../core/constant.js";
 import prisma from "../config/prisma.js";
 import { snap, core } from "../utils/midtrans.js";

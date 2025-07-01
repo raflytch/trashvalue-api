@@ -6,7 +6,7 @@ import {
   updateDropoffStatusService,
   cancelDropoffService,
   deleteDropoffService,
-} from "../services/dropoffService.js";
+} from "../services/dropoff.service.js";
 import { response } from "../core/response.js";
 import { USER_ROLE } from "../core/constant.js";
 

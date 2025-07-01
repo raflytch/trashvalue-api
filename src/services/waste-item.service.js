@@ -1,9 +1,9 @@
 import {
   findWasteItemsByDropoffIdModel,
   findWasteItemByIdModel,
-} from "../models/wasteItemModel.js";
-import { getWasteTypeByIdService } from "./wasteTypeService.js";
-import { getDropoffByIdService } from "./dropoffService.js";
+} from "../models/waste-item.model.js";
+import { getWasteTypeByIdService } from "./waste-type.service.js";
+import { getDropoffByIdService } from "./dropoff.service.js";
 import prisma from "../config/prisma.js";
 import { STATUS } from "../core/constant.js";
 

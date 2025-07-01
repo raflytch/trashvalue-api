@@ -8,8 +8,8 @@ import {
   getAllChatsController,
   getChatStatisticsController,
   bulkDeleteChatsController,
-} from "../controllers/chatWithAiController.js";
-import roleMiddleware from "../middlewares/auth.js";
+} from "../controllers/chat-with-ai.controller.js";
+import roleMiddleware from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/upload.js";
 
 const router = express.Router();

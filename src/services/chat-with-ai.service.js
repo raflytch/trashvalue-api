@@ -9,8 +9,8 @@ import {
   deleteChatModel,
   findAllChatsModel,
   searchChatsModel,
-} from "../models/chatWithAiModel.js";
-import { getUserById } from "./userService.js";
+} from "../models/chat-with-ai.model.js";
+import { getUserById } from "./user.service.js";
 import imagekit from "../utils/imagekit.js";
 import prisma from "../config/prisma.js";
 

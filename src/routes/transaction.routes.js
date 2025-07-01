@@ -9,9 +9,9 @@ import {
   updateTransactionStatusController,
   getPaymentStatusController,
   cancelTransactionController,
-} from "../controllers/transactionController.js";
-import roleMiddleware from "../middlewares/auth.js";
-import verifyMidtransSignature from "../middlewares/midtransAuth.js";
+} from "../controllers/transaction.controller.js";
+import roleMiddleware from "../middlewares/auth.middleware.js";
+import verifyMidtransSignature from "../middlewares/midtrans-auth.js";
 
 const router = express.Router();
 

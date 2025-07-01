@@ -6,7 +6,7 @@ import {
   updateDropoffStatusModel,
   updateDropoffModel,
   deleteDropoffModel,
-} from "../models/dropoffModel.js";
+} from "../models/dropoff.model.js";
 import { STATUS, TRANSACTION_TYPE, PICKUP_METHOD } from "../core/constant.js";
 import prisma from "../config/prisma.js";
 

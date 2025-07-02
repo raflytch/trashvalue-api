@@ -86,8 +86,13 @@ export const createWithdrawalService = async (userId, transactionData) => {
     throw new Error("Amount must be greater than 0");
   }
 
-  if (user.balance < parseFloat(amount)) {
-    throw new Error("Insufficient balance for withdrawal");
+  const requestedAmount = parseFloat(amount);
+  const userPoints = user.points || 0;
+  const userBalance = user.balance || 0;
+
+  // Check if total points + balance is sufficient
+  if (userPoints + userBalance < requestedAmount) {
+    throw new Error("Insufficient points and balance for withdrawal");
   }
 
   const paymentMethodFormatted = paymentMethod.toUpperCase();
@@ -101,25 +106,58 @@ export const createWithdrawalService = async (userId, transactionData) => {
   }
 
   const transaction = await prisma.$transaction(async (prisma) => {
+    let pointsUsed = 0;
+    let balanceUsed = 0;
+
+    // Calculate points and balance usage
+    if (userPoints >= requestedAmount) {
+      // Use only points
+      pointsUsed = requestedAmount;
+    } else {
+      // Use all points + remaining from balance
+      pointsUsed = userPoints;
+      balanceUsed = requestedAmount - userPoints;
+    }
+
+    // Create transaction with breakdown
     const transaction = await prisma.transaction.create({
       data: {
         userId,
-        amount: parseFloat(amount),
+        amount: requestedAmount,
         type: TRANSACTION_TYPE.WITHDRAWAL,
         status: STATUS.PENDING,
         paymentMethod: paymentMethodFormatted,
-        description: description || "Balance withdrawal",
+        description:
+          description ||
+          `Withdrawal: ${pointsUsed} points + ${balanceUsed} balance`,
+        pointsUsed,
+        balanceUsed,
       },
     });
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        balance: {
-          decrement: parseFloat(amount),
+    // Update user points if used
+    if (pointsUsed > 0) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          points: {
+            decrement: pointsUsed,
+          },
         },
-      },
-    });
+      });
+    }
+
+    // Update user balance if used
+    if (balanceUsed > 0) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          balance: {
+            decrement: balanceUsed,
+          },
+        },
+      });
+    }
 
     return transaction;
   });
@@ -391,24 +429,45 @@ export const updateTransactionStatusService = async (id, status) => {
       },
     });
 
+    // Refund for rejected withdrawal
     if (
       transaction.type === TRANSACTION_TYPE.WITHDRAWAL &&
       transaction.status !== STATUS.COMPLETED &&
       status === STATUS.REJECTED
     ) {
       console.log(
-        `Refunding withdrawal amount to user balance: ${transaction.amount}`
+        `Refunding withdrawal to user: ${
+          transaction.pointsUsed || 0
+        } points + ${transaction.balanceUsed || 0} balance`
       );
-      await prisma.user.update({
-        where: {
-          id: transaction.userId,
-        },
-        data: {
-          balance: {
-            increment: parseFloat(transaction.amount),
+
+      // Refund points if used
+      if (transaction.pointsUsed > 0) {
+        await prisma.user.update({
+          where: {
+            id: transaction.userId,
           },
-        },
-      });
+          data: {
+            points: {
+              increment: parseFloat(transaction.pointsUsed),
+            },
+          },
+        });
+      }
+
+      // Refund balance if used
+      if (transaction.balanceUsed > 0) {
+        await prisma.user.update({
+          where: {
+            id: transaction.userId,
+          },
+          data: {
+            balance: {
+              increment: parseFloat(transaction.balanceUsed),
+            },
+          },
+        });
+      }
     }
 
     return updatedTransaction;

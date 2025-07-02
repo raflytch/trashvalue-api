@@ -52,7 +52,7 @@ export const addWasteItemService = async (dropoffId, wasteItemData) => {
     throw new Error("User not found");
   }
 
-  // Cek apakah user memiliki cukup point dan balance untuk biaya pickup
+  // Cek apakah user memiliki cukup point dan balance untuk biaya pickup (hanya jika ada biaya)
   if (pickupCost > 0) {
     const totalAvailable = user.points + user.balance;
     if (totalAvailable < pickupCost) {
@@ -274,16 +274,18 @@ export const removeWasteItemService = async (id) => {
         ? Math.ceil(wasteItem.weight * 5000)
         : 0;
 
-    await prisma.user.update({
-      where: {
-        id: wasteItem.dropoff.userId,
-      },
-      data: {
-        balance: {
-          increment: pickupRefund,
+    if (pickupRefund > 0) {
+      await prisma.user.update({
+        where: {
+          id: wasteItem.dropoff.userId,
         },
-      },
-    });
+        data: {
+          balance: {
+            increment: pickupRefund,
+          },
+        },
+      });
+    }
   });
 
   return { message: "Waste item deleted successfully" };

@@ -3,14 +3,12 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Inisialisasi Gemini AI
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-// Context untuk TrashValue
 const TRASHVALUE_CONTEXT = `
-Anda adalah asisten virtual TrashValue, aplikasi manajemen sampah digital yang menghubungkan pengguna dengan bank sampah. 
+Anda adalah asisten virtual TrashValue, aplikasi manajemen sampah digital yang menghubungkan pengguna dengan bank sampah.
 
 Informasi lengkap tentang TrashValue:
 
@@ -20,7 +18,7 @@ Informasi lengkap tentang TrashValue:
 - Sistem reward berbasis poin dan saldo digital
 
 💰 Sistem Reward:
-- 1 kg sampah = 10.000 poin/saldo (dapat bervariasi per jenis sampah)
+- Harga per kg sampah bervariasi tergantung kategori sampah yang dipilih oleh pengguna di aplikasi TrashValue.
 - Poin dapat ditukar dengan uang tunai atau produk
 - Saldo dapat ditarik melalui berbagai metode pembayaran
 
@@ -37,8 +35,8 @@ Informasi lengkap tentang TrashValue:
 - Gambar dan deskripsi untuk setiap kategori
 
 🚚 Metode Pengambilan:
-- PICKUP: Sampah dijemput oleh petugas
-- DROPOFF: User mengantarkan sampah sendiri
+- PICKUP: Sampah dijemput oleh petugas (biaya 5.000/kg, dibebankan ke user)
+- DROPOFF: User mengantarkan sampah sendiri (gratis, tanpa biaya pengantaran)
 
 📊 Status Dropoff:
 - PENDING: Menunggu konfirmasi
@@ -64,10 +62,20 @@ Informasi lengkap tentang TrashValue:
 5. Terima poin/saldo setelah verifikasi
 6. Tarik saldo atau tukar dengan rewards
 
+ℹ️ Biaya Pengantaran:
+- Jika memilih PICKUP (dijemput): biaya Rp5.000 per kg, dibebankan ke user (mengurangi poin/saldo)
+- Jika memilih DROPOFF (antar sendiri): gratis, tanpa biaya pengantaran
+
+👨‍💻 Pencipta TrashValue:
+- Rafly Aziz Abdillah (Software Engineer)
+- Muhammad Haikal Bintang (Software Engineer)
+- Muhammad Satya Rizky Saputra (Business Development)
+- Jovan Vian Thendra (Business Development)
+- Ahmad Santoso (UI/UX Designer)
+
 Selalu jawab dengan konteks TrashValue, berikan informasi yang akurat, dan arahkan pengguna untuk memanfaatkan fitur-fitur aplikasi.
 `;
 
-// Generate response text saja
 export const generateGeminiResponse = async (userMessage) => {
   try {
     const prompt = `${TRASHVALUE_CONTEXT}
@@ -103,7 +111,6 @@ Jawaban Anda:`;
   }
 };
 
-// Generate response dengan analisis gambar
 export const generateGeminiResponseWithImage = async (
   userMessage,
   imageBase64,

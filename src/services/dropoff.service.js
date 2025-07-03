@@ -7,6 +7,7 @@ import {
   updateDropoffModel,
   deleteDropoffModel,
 } from "../models/dropoff.model.js";
+import { getWasteBankByIdService } from "./waste-bank.service.js";
 import { STATUS, TRANSACTION_TYPE, PICKUP_METHOD } from "../core/constant.js";
 import prisma from "../config/prisma.js";
 
@@ -64,10 +65,15 @@ export const createDropoffService = async (userId, dropoffData) => {
   let totalWeight = 0;
   let totalAmount = 0;
 
+  if (dropoffData.wasteBankId) {
+    await getWasteBankByIdService(dropoffData.wasteBankId);
+  }
+
   const result = await prisma.$transaction(async (prisma) => {
     const dropoff = await prisma.dropoff.create({
       data: {
         userId,
+        wasteBankId: dropoffData.wasteBankId || null,
         totalWeight,
         totalAmount,
         pickupAddress: dropoffData.pickupAddress,
@@ -77,6 +83,16 @@ export const createDropoffService = async (userId, dropoffData) => {
         pickupMethod: dropoffData.pickupMethod || PICKUP_METHOD.DROPOFF,
         notes: dropoffData.notes,
         status: STATUS.PENDING,
+      },
+      include: {
+        wasteBank: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+          },
+        },
+        wasteItems: true,
       },
     });
 
@@ -94,7 +110,12 @@ export const updateDropoffStatusService = async (id, status) => {
   }
 
   const validTransitions = {
-    [STATUS.PENDING]: [STATUS.PROCESSING, STATUS.REJECTED, STATUS.CANCELLED],
+    [STATUS.PENDING]: [
+      STATUS.PROCESSING,
+      STATUS.COMPLETED,
+      STATUS.REJECTED,
+      STATUS.CANCELLED,
+    ],
     [STATUS.PROCESSING]: [STATUS.COMPLETED, STATUS.REJECTED],
     [STATUS.COMPLETED]: [],
     [STATUS.REJECTED]: [],

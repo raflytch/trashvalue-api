@@ -91,19 +91,24 @@ export const getDropoffByIdController = async (req, res) => {
 
 export const createDropoffController = async (req, res) => {
   try {
-    const { pickupAddress, pickupDate, pickupMethod, notes } = req.body;
+    const { pickupAddress, pickupDate, pickupMethod, notes, wasteBankId } =
+      req.body;
 
     const dropoffData = {
       pickupAddress,
       pickupDate,
       pickupMethod,
       notes,
+      wasteBankId,
     };
 
     const dropoff = await createDropoffService(req.user.id, dropoffData);
 
     return response.success(res, dropoff, "Dropoff created successfully", 201);
   } catch (error) {
+    if (error.message.includes("not found")) {
+      return response.error(res, error.message, 404);
+    }
     return response.error(res, error.message);
   }
 };

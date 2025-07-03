@@ -27,6 +27,13 @@ export const findAllDropoffsModel = async (page, limit, status, userId) => {
           email: true,
         },
       },
+      wasteBank: {
+        select: {
+          id: true,
+          name: true,
+          address: true,
+        },
+      },
       wasteItems: {
         include: {
           wasteType: true,
@@ -42,7 +49,12 @@ export const findAllDropoffsModel = async (page, limit, status, userId) => {
   return { dropoffs, totalDropoffs };
 };
 
-export const findDropoffsByUserIdModel = async (userId, page, limit, status) => {
+export const findDropoffsByUserIdModel = async (
+  userId,
+  page,
+  limit,
+  status
+) => {
   const skip = (page - 1) * limit;
 
   let whereClause = { userId };
@@ -58,6 +70,13 @@ export const findDropoffsByUserIdModel = async (userId, page, limit, status) => 
       createdAt: "desc",
     },
     include: {
+      wasteBank: {
+        select: {
+          id: true,
+          name: true,
+          address: true,
+        },
+      },
       wasteItems: {
         include: {
           wasteType: true,
@@ -87,6 +106,13 @@ export const findDropoffByIdModel = async (id) => {
           email: true,
         },
       },
+      wasteBank: {
+        select: {
+          id: true,
+          name: true,
+          address: true,
+        },
+      },
       wasteItems: {
         include: {
           wasteType: true,
@@ -100,6 +126,13 @@ export const createDropoffModel = async (dropoffData) => {
   return prisma.dropoff.create({
     data: dropoffData,
     include: {
+      wasteBank: {
+        select: {
+          id: true,
+          name: true,
+          address: true,
+        },
+      },
       wasteItems: true,
     },
   });
@@ -114,6 +147,13 @@ export const updateDropoffStatusModel = async (id, status) => {
       status,
     },
     include: {
+      wasteBank: {
+        select: {
+          id: true,
+          name: true,
+          address: true,
+        },
+      },
       wasteItems: true,
       user: {
         select: {
@@ -134,6 +174,13 @@ export const updateDropoffModel = async (id, dropoffData) => {
     },
     data: dropoffData,
     include: {
+      wasteBank: {
+        select: {
+          id: true,
+          name: true,
+          address: true,
+        },
+      },
       wasteItems: true,
     },
   });

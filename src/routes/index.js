@@ -4,6 +4,8 @@ import dropoffRoutes from "./dropoff.routes.js";
 import wasteItemRoutes from "./waste-item.routes.js";
 import transactionRoutes from "./transaction.routes.js";
 import chatWithAitRoutes from "./chat-with-ai.routes.js";
+import wasteBankRoutes from "./waste-bank.routes.js";
+
 import { Router } from "express";
 
 const router = Router();
@@ -14,5 +16,6 @@ router.use("/dropoffs", dropoffRoutes);
 router.use("/waste", wasteItemRoutes);
 router.use("/transactions", transactionRoutes);
 router.use("/chat", chatWithAitRoutes);
+router.use("/waste-banks", wasteBankRoutes);
 
 export default router;

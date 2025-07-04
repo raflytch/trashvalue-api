@@ -94,7 +94,7 @@ Pertanyaan/pesan dari pengguna: "${userMessage}"
 Jawaban Anda:`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash",
       contents: prompt,
       generationConfig: {
         temperature: 0.7,

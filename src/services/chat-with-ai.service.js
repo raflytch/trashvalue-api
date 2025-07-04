@@ -2,42 +2,89 @@ import {
   generateGeminiResponse,
   generateGeminiResponseWithImage,
 } from "../utils/gemini.js";
+import {
+  createChatModel,
+  findChatsByUserIdModel,
+  findChatByIdModel,
+  deleteChatModel,
+  findAllChatsModel,
+  searchChatsModel,
+} from "../models/chat-with-ai.model.js";
 import { getUserById } from "./user.service.js";
+import imagekit from "../utils/imagekit.js";
+import prisma from "../config/prisma.js";
 
+// Service untuk membuat chat baru dengan AI (upload gambar dulu jika ada)
 export const createChatWithAiService = async (
   userId,
   message,
   imageFile = null
 ) => {
+  // Validasi user exists
   await getUserById(userId);
 
+  // Validasi input minimal ada message atau gambar
   if (!message?.trim() && !imageFile) {
     throw new Error("Message or image is required");
   }
 
   try {
+    let imageUrl = null;
     let aiResponse;
 
+    // STEP 1: Upload gambar ke ImageKit terlebih dahulu jika ada
     if (imageFile) {
+      try {
+        const uploadResponse = await imagekit.upload({
+          file: imageFile.buffer.toString("base64"),
+          fileName: `chat_image_${userId}_${Date.now()}`,
+          folder: "/chat-images",
+        });
+        imageUrl = uploadResponse.url;
+        console.log("Image uploaded successfully:", imageUrl);
+      } catch (uploadError) {
+        console.error("Error uploading image to ImageKit:", uploadError);
+        // Jika upload gagal, lanjut tanpa gambar
+        imageUrl = null;
+      }
+    }
+
+    // STEP 2: Generate AI response setelah upload selesai
+    if (imageFile && imageUrl) {
+      // Jika ada gambar dan berhasil diupload, analisis dengan AI
       aiResponse = await generateGeminiResponseWithImage(
         message || "Tolong analisis gambar ini untuk TrashValue",
         imageFile.buffer.toString("base64"),
         imageFile.mimetype
       );
+    } else if (imageFile && !imageUrl) {
+      // Jika ada gambar tapi gagal upload, beri respons tanpa analisis gambar
+      aiResponse = await generateGeminiResponse(
+        message ||
+          "Maaf, gambar tidak dapat diproses. Bagaimana TrashValue bisa membantu Anda hari ini?"
+      );
     } else {
+      // Jika tidak ada gambar, proses text biasa
       aiResponse = await generateGeminiResponse(message.trim());
     }
 
-    return {
+    // STEP 3: Simpan ke database setelah semua proses selesai
+    const chatData = {
+      userId,
       message: message?.trim() || "[Mengirim gambar]",
       response: aiResponse,
+      imageUrl, // Akan null jika tidak ada gambar atau gagal upload
     };
+
+    const chat = await createChatModel(chatData);
+    return chat;
   } catch (error) {
     console.error("Error in createChatWithAiService:", error);
     throw new Error(error.message || "Failed to process chat with AI");
   }
 };
 
+// Service untuk mendapatkan riwayat chat user
 export const getChatHistoryService = async (userId, page = 1, limit = 10) => {
   await getUserById(userId);
 
@@ -59,6 +106,7 @@ export const getChatHistoryService = async (userId, page = 1, limit = 10) => {
   };
 };
 
+// Service untuk mencari chat
 export const searchChatHistoryService = async (
   userId,
   keyword,
@@ -91,6 +139,7 @@ export const searchChatHistoryService = async (
   };
 };
 
+// Service untuk mendapatkan chat berdasarkan ID
 export const getChatByIdService = async (id, userId, userRole) => {
   const chat = await findChatByIdModel(id);
 
@@ -98,6 +147,7 @@ export const getChatByIdService = async (id, userId, userRole) => {
     throw new Error("Chat not found");
   }
 
+  // User hanya bisa akses chat miliknya, admin bisa akses semua
   if (userRole !== "ADMIN" && chat.userId !== userId) {
     throw new Error("Unauthorized access to this chat");
   }
@@ -105,6 +155,7 @@ export const getChatByIdService = async (id, userId, userRole) => {
   return chat;
 };
 
+// Service untuk menghapus chat
 export const deleteChatService = async (id, userId, userRole) => {
   const chat = await findChatByIdModel(id);
 
@@ -112,6 +163,7 @@ export const deleteChatService = async (id, userId, userRole) => {
     throw new Error("Chat not found");
   }
 
+  // User hanya bisa hapus chat miliknya, admin bisa hapus semua
   if (userRole !== "ADMIN" && chat.userId !== userId) {
     throw new Error("Unauthorized to delete this chat");
   }
@@ -120,6 +172,7 @@ export const deleteChatService = async (id, userId, userRole) => {
   return { message: "Chat deleted successfully" };
 };
 
+// Service untuk admin mendapatkan semua chat dengan filter
 export const getAllChatsService = async (
   page = 1,
   limit = 10,
@@ -140,6 +193,7 @@ export const getAllChatsService = async (
   };
 };
 
+// Service untuk mendapatkan statistik chat
 export const getChatStatisticsService = async () => {
   const totalChats = await prisma.chat.count();
 

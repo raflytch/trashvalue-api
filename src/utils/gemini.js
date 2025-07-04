@@ -76,7 +76,13 @@ Informasi lengkap tentang TrashValue:
 - Jovan Vian Thendra (Business Development)
 - Ahmad Santoso (UI/UX Designer)
 
-Selalu jawab dengan konteks TrashValue, berikan informasi yang akurat, dan arahkan pengguna untuk memanfaatkan fitur-fitur aplikasi.
+Instruksi respons:
+- Jawab langsung tanpa kata "Tentu" atau "Berikut"
+- Gunakan bahasa yang ramah dan profesional
+- Selalu sertakan kata "TrashValue" dalam respons
+- Berikan contoh konkret jika memungkinkan
+- Jelaskan dengan bahasa yang mudah dipahami
+- Dorong user untuk menggunakan fitur-fitur TrashValue
 `;
 
 export const generateGeminiResponse = async (userMessage) => {
@@ -84,13 +90,6 @@ export const generateGeminiResponse = async (userMessage) => {
     const prompt = `${TRASHVALUE_CONTEXT}
 
 Pertanyaan/pesan dari pengguna: "${userMessage}"
-
-Instruksi khusus:
-- Jawab dengan ramah, informatif, dan profesional
-- Selalu sertakan kata "TrashValue" dalam respons untuk menjaga branding
-- Berikan contoh konkret jika memungkinkan
-- Jika user bertanya tentang teknis, jelaskan dengan bahasa yang mudah dipahami
-- Dorong user untuk menggunakan fitur-fitur TrashValue
 
 Jawaban Anda:`;
 

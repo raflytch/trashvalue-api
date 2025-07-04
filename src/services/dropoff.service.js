@@ -9,6 +9,7 @@ import {
 } from "../models/dropoff.model.js";
 import { getWasteBankByIdService } from "./waste-bank.service.js";
 import { STATUS, TRANSACTION_TYPE, PICKUP_METHOD } from "../core/constant.js";
+import { sendDropoffStatusUpdateEmail } from "../utils/mailer.js";
 import prisma from "../config/prisma.js";
 
 export const getAllDropoffsService = async (page = 1, limit = 10, status) => {
@@ -131,16 +132,19 @@ export const updateDropoffStatusService = async (id, status) => {
   const updatedDropoff = await updateDropoffStatusModel(id, status);
 
   if (status === STATUS.COMPLETED) {
+    const balanceReward = dropoff.totalAmount / 2;
+    const pointsReward = Math.floor(dropoff.totalAmount);
+
     await prisma.user.update({
       where: {
         id: dropoff.userId,
       },
       data: {
         balance: {
-          increment: dropoff.totalAmount,
+          increment: balanceReward,
         },
         points: {
-          increment: Math.floor(dropoff.totalAmount),
+          increment: pointsReward,
         },
       },
     });
@@ -148,12 +152,20 @@ export const updateDropoffStatusService = async (id, status) => {
     await prisma.transaction.create({
       data: {
         userId: dropoff.userId,
-        amount: dropoff.totalAmount,
+        amount: balanceReward,
         type: TRANSACTION_TYPE.DEPOSIT,
         status: STATUS.COMPLETED,
-        description: `Completed dropoff #${id}`,
+        description: `Completed dropoff #${id} - Balance reward`,
       },
     });
+  }
+
+  if (dropoff.user.email) {
+    try {
+      await sendDropoffStatusUpdateEmail(dropoff.user.email, updatedDropoff);
+    } catch (emailError) {
+      console.error("Failed to send email notification:", emailError);
+    }
   }
 
   return updatedDropoff;

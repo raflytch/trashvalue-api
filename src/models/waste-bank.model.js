@@ -47,6 +47,13 @@ export const createWasteBankModel = async (data) => {
   });
 };
 
+export const createManyWasteBanksModel = async (data) => {
+  return prisma.wasteBank.createMany({
+    data,
+    skipDuplicates: true,
+  });
+};
+
 export const updateWasteBankModel = async (id, data) => {
   return prisma.wasteBank.update({
     where: { id },
@@ -65,6 +72,16 @@ export const deleteWasteBankModel = async (id) => {
   return prisma.wasteBank.delete({ where: { id } });
 };
 
+export const deleteManyWasteBanksModel = async (ids) => {
+  return prisma.wasteBank.deleteMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+  });
+};
+
 export const checkWasteBankNameExistsModel = async (name, excludeId = null) => {
   const whereClause = { name };
   if (excludeId) {
@@ -73,5 +90,35 @@ export const checkWasteBankNameExistsModel = async (name, excludeId = null) => {
 
   return prisma.wasteBank.findFirst({
     where: whereClause,
+  });
+};
+
+export const checkMultipleWasteBankNamesExistModel = async (names) => {
+  return prisma.wasteBank.findMany({
+    where: {
+      name: {
+        in: names,
+      },
+    },
+    select: {
+      name: true,
+    },
+  });
+};
+
+export const findWasteBanksByIdsModel = async (ids) => {
+  return prisma.wasteBank.findMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+    include: {
+      _count: {
+        select: {
+          dropoffs: true,
+        },
+      },
+    },
   });
 };

@@ -2,8 +2,10 @@ import {
   getAllWasteBanksService,
   getWasteBankByIdService,
   createWasteBankService,
+  createManyWasteBanksService,
   updateWasteBankService,
   deleteWasteBankService,
+  deleteManyWasteBanksService,
 } from "../services/waste-bank.service.js";
 import { response } from "../core/response.js";
 
@@ -81,6 +83,41 @@ export const createWasteBankController = async (req, res) => {
   }
 };
 
+export const createManyWasteBanksController = async (req, res) => {
+  try {
+    const { wasteBanks } = req.body;
+
+    if (!wasteBanks) {
+      return response.validation(res, {
+        message: "wasteBanks array is required",
+      });
+    }
+
+    const result = await createManyWasteBanksService(wasteBanks);
+
+    return response.success(
+      res,
+      result,
+      "Waste banks created successfully",
+      201
+    );
+  } catch (error) {
+    if (
+      error.message.includes("already exist") ||
+      error.message.includes("Duplicate")
+    ) {
+      return response.error(res, error.message, 409);
+    }
+    if (
+      error.message.includes("Validation errors") ||
+      error.message.includes("Maximum")
+    ) {
+      return response.validation(res, { message: error.message });
+    }
+    return response.error(res, error.message);
+  }
+};
+
 export const updateWasteBankController = async (req, res) => {
   try {
     const { id } = req.params;
@@ -132,6 +169,33 @@ export const deleteWasteBankController = async (req, res) => {
       return response.error(res, error.message, 404);
     }
     if (error.message.includes("Cannot delete")) {
+      return response.validation(res, { message: error.message });
+    }
+    return response.error(res, error.message);
+  }
+};
+
+export const deleteManyWasteBanksController = async (req, res) => {
+  try {
+    const { wasteBankIds } = req.body;
+
+    if (!wasteBankIds) {
+      return response.validation(res, {
+        message: "wasteBankIds array is required",
+      });
+    }
+
+    const result = await deleteManyWasteBanksService(wasteBankIds);
+
+    return response.success(res, result, "Waste banks deleted successfully");
+  } catch (error) {
+    if (error.message.includes("not found")) {
+      return response.error(res, error.message, 404);
+    }
+    if (
+      error.message.includes("Cannot delete") ||
+      error.message.includes("Maximum")
+    ) {
       return response.validation(res, { message: error.message });
     }
     return response.error(res, error.message);

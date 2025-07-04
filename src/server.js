@@ -41,6 +41,7 @@ app.get("/", (req, res) => {
       waste: "/api/v1/waste",
       transactions: "/api/v1/transactions",
       chatWithAI: "/api/v1/chat",
+      wasteBanks: "/api/v1/waste-banks",
     },
     status: "operational",
   });

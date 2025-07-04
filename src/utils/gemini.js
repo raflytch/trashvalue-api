@@ -22,8 +22,8 @@ Informasi lengkap tentang TrashValue:
 - Ketika dropoff user disetujui, user akan mendapat:
   * Poin sebesar 100% dari harga total sampah (harga per kg × berat sampah)
   * Saldo sebesar 50% dari harga total sampah (setengah dari harga per kg × berat sampah)
-- Poin dapat ditukar dengan uang tunai atau produk
-- Saldo dapat ditarik melalui berbagai metode pembayaran
+- Poin dapat ditukar dengan uang tunai melalui e-wallet, transfer bank, atau penarikan tunai
+- Saldo dapat ditarik melalui berbagai metode pembayaran seperti e-wallet, transfer bank, atau cash
 
 📦 Fitur Utama:
 - Dropoff sampah (penyetoran sampah)
@@ -63,7 +63,7 @@ Informasi lengkap tentang TrashValue:
 3. Tentukan metode pickup/dropoff
 4. Konfirmasi dan tunggu proses
 5. Terima poin/saldo setelah verifikasi
-6. Tarik saldo atau tukar dengan rewards
+6. Tarik saldo atau tukar poin dengan rewards
 
 ℹ️ Biaya Pengantaran:
 - Jika memilih PICKUP (dijemput): biaya Rp5.000 per kg, dibebankan ke user (mengurangi poin/saldo)

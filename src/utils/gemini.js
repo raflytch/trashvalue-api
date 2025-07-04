@@ -19,6 +19,9 @@ Informasi lengkap tentang TrashValue:
 
 💰 Sistem Reward:
 - Harga per kg sampah bervariasi tergantung kategori sampah yang dipilih oleh pengguna di aplikasi TrashValue.
+- Ketika dropoff user disetujui, user akan mendapat:
+  * Poin sebesar 100% dari harga total sampah (harga per kg × berat sampah)
+  * Saldo sebesar 50% dari harga total sampah (setengah dari harga per kg × berat sampah)
 - Poin dapat ditukar dengan uang tunai atau produk
 - Saldo dapat ditarik melalui berbagai metode pembayaran
 
@@ -43,7 +46,7 @@ Informasi lengkap tentang TrashValue:
 - PROCESSING: Sedang diproses
 - COMPLETED: Selesai dan poin sudah diberikan
 - REJECTED: Ditolak dengan alasan tertentu
-- CANCELLED: Dibatalkan oleh user
+- CANCELLED: Dibatalkan oleh ADMIN
 
 💳 Pembayaran:
 - Integrasi dengan Midtrans payment gateway

@@ -9,21 +9,18 @@ import {
 } from "../services/chat-with-ai.service.js";
 import { response } from "../core/response.js";
 
-// Controller untuk membuat chat baru dengan AI (dengan dukungan gambar)
 export const createChatController = async (req, res) => {
   try {
     const { message } = req.body;
     const userId = req.user.id;
     const imageFile = req.file;
 
-    // Validasi input minimal ada message atau gambar
     if (!message?.trim() && !imageFile) {
       return response.validation(res, {
         message: "Message or image is required",
       });
     }
 
-    // Validasi tipe file jika ada gambar
     if (imageFile) {
       const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!allowedTypes.includes(imageFile.mimetype)) {
@@ -32,7 +29,6 @@ export const createChatController = async (req, res) => {
         });
       }
 
-      // Validasi ukuran file (max 5MB)
       if (imageFile.size > 5 * 1024 * 1024) {
         return response.validation(res, {
           message: "Image size must be less than 5MB",
@@ -40,7 +36,6 @@ export const createChatController = async (req, res) => {
       }
     }
 
-    // Proses chat dengan AI
     const chat = await createChatWithAiService(userId, message, imageFile);
 
     return response.success(
@@ -57,7 +52,6 @@ export const createChatController = async (req, res) => {
   }
 };
 
-// Controller untuk mendapatkan riwayat chat user
 export const getChatHistoryController = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -78,7 +72,6 @@ export const getChatHistoryController = async (req, res) => {
   }
 };
 
-// Controller untuk mencari chat
 export const searchChatController = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -106,7 +99,6 @@ export const searchChatController = async (req, res) => {
   }
 };
 
-// Controller untuk mendapatkan chat berdasarkan ID
 export const getChatByIdController = async (req, res) => {
   try {
     const { id } = req.params;
@@ -127,7 +119,6 @@ export const getChatByIdController = async (req, res) => {
   }
 };
 
-// Controller untuk menghapus chat
 export const deleteChatController = async (req, res) => {
   try {
     const { id } = req.params;
@@ -148,7 +139,6 @@ export const deleteChatController = async (req, res) => {
   }
 };
 
-// Controller untuk admin mendapatkan semua chat dengan filter
 export const getAllChatsController = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -173,7 +163,6 @@ export const getAllChatsController = async (req, res) => {
   }
 };
 
-// Controller untuk mendapatkan statistik chat (admin only)
 export const getChatStatisticsController = async (req, res) => {
   try {
     const statistics = await getChatStatisticsService();
@@ -188,7 +177,6 @@ export const getChatStatisticsController = async (req, res) => {
   }
 };
 
-// Controller untuk bulk delete chats (admin only)
 export const bulkDeleteChatsController = async (req, res) => {
   try {
     const { chatIds } = req.body;

@@ -2,6 +2,11 @@
 
 **TrashValue** adalah aplikasi manajemen sampah digital yang menghubungkan pengguna dengan bank sampah. Pengguna dapat menyetorkan sampah mereka dan menerima uang tunai atau poin digital sebagai imbalan. Sistem ini juga menyediakan fitur chat AI berbasis Gemini untuk edukasi dan konsultasi seputar pengelolaan sampah.
 
+**Admin Credentials:**
+
+- Email: `admin@trashvalue.com`
+- Password: `admin123`
+
 ---
 
 ## 🚀 Fitur Utama
